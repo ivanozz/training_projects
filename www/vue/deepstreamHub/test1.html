@@ -1,0 +1,68 @@
+<html><head>
+    <script>
+        (function () {
+            window.addEventListener('DOMContentLoaded', function () {
+                window.parent.postMessage(JSON.stringify({
+                    type: 'jotted-dom-ready'
+                }), '*')
+            })
+        }())
+    </script>
+
+    <style>#container {
+        width: calc(100% - 50px);
+        height: calc(100% - 50px);
+        min-height: 300px;
+        position: relative;
+    }
+
+    #shape {
+        position: absolute;
+        transition: all 1s ease 0s;
+    }
+
+    .circle {
+        border-radius: 100%;
+        width: 50px;
+        height: 50px;
+    }
+
+    .square {
+        width: 50px;
+        height: 50px;
+    }
+    </style>
+</head>
+<body>
+<script src="//code.deepstreamhub.com/js/2.x/deepstream.min.js"></script>
+
+<div id="container">
+    <div id="shape" class="square" style="left: 2%; top: 2%; background-color: lightgreen;">
+    </div>
+</div>
+
+
+<!--
+  Jotted:
+  Empty script tag prevents malformed HTML from breaking the next script.
+-->
+<script></script>
+<script>// Connect to deepstreamHub
+var client = deepstream('wss://035.deepstreamhub.com?apiKey=acbc2bce-b02f-4cca-a322-06598ebc3bef')
+
+// Login
+client.login()
+
+// Listen to record changes
+var shapeElement = document.querySelector( '#shape' );
+var record = client.record.getRecord('dsh-demo/bouncy-ball');
+record.subscribe(function(data) {
+    shapeElement.style.left = data.position.x + '%';
+    shapeElement.style.top = data.position.y + '%';
+    shapeElement.style.backgroundColor = data.color;
+    shapeElement.className = data.shape;
+})
+</script>
+
+
+</body></html>
